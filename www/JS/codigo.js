@@ -2,11 +2,15 @@ const urlBase = "https://movetrack.develotion.com/";
 const urlImagenes = "https://movetrack.develotion.com/imgs/";
 const ruteo = document.querySelector("#ruteo");
 
+
+
+
 inicio();
 function inicio() {
     ocultarPaginas();
     agregarEventos();
     obtenerPaises();
+    obtenerActividades();
     if(localStorage.getItem("apiKey")!=null && localStorage.getItem("apiKey")!=undefined){
         mostrarMenu("logueado");
     }else{
@@ -18,6 +22,8 @@ function inicio() {
 function agregarEventos(){
     document.querySelector("#ruteo").addEventListener("ionRouteWillChange",navegar);
     document.querySelector("#btnRegistro").addEventListener("click", registro);
+    document.querySelector("#btnCerrarSesion").addEventListener("click" , cerrarSesion);
+    document.querySelector("#btnLogin").addEventListener("click", iniciarSesion);
     ruteo.addEventListener("ionRouteWillChange",mostrarPagina);
 
 }
@@ -42,7 +48,6 @@ function mostrarMenu(clase){
 
 function navegar(event){
     ocultarPaginas();
-    console.log(event);
     if(event.detail.to=="/"){
         document.querySelector("#home").style.display="block";
     }
@@ -52,6 +57,10 @@ function navegar(event){
     else if(event.detail.to=="/registro"){
         document.querySelector("#registro").style.display="block";
     }
+    else if(event.detail.to=="/registroActividades"){
+        document.querySelector("#registroActividades").style.display="block";
+    }
+   
 }
 
 
@@ -81,19 +90,24 @@ function mostrarPagina(event) {
         case "/login":
             document.querySelector("#login").style.display = "block";
             break;
-        default:
+        case "/registroActividades":
+            document.querySelector("#registroActividades").style.display = "block";
+            break;
+            default:
             localStorage.clear();
             mostrarMenu("noLogueado");
             ruteo.push("/login");
     }
 }
-     /*REGISTRO*/
-function registro() {
+
+
+    /*REGISTRO*/
+     function registro() {
     try {
         let usuario = document.querySelector("#txtUsuarioRegistro").value;
         let password = document.querySelector("#txtPasswordRegistro").value;
         let pais = document.querySelector("#slcPais").value;
-        validarDatosRegistro(usuario, password);
+        validarDatos(usuario, password);
         fetch(urlBase+"/usuarios.php",
              {
                 method:"POST",
@@ -109,10 +123,11 @@ function registro() {
         .then(function(datos){
             if(datos.codigo=="200"){
                 localStorage.setItem("apiKey", datos.apiKey);
+                localStorage.setItem("id", datos.id);
                 mostrarMensaje("Registro exitoso");
                 limpiarCamposRegistro("txtUsuarioRegistro","txtPasswordRegistro","slcPais");
                 mostrarMenu("logueado");
-                mostrarMensaje("Registro Exitoso",500);
+                mostrarMensaje("Registro Exitoso, bienvenido " + usuario,500);
                 setTimeout(() => {
                     ruteo.push("/");
                 },501);
@@ -125,7 +140,7 @@ function registro() {
     }
 }
  /*VALIDA LOS DATOS DE REGISTRO*/
-function validarDatosRegistro(usuario, password) {
+function validarDatos(usuario, password) {
     if (usuario.trim().length == 0) {
         throw new Error("El usuario es obligatorio");
     }
@@ -172,4 +187,84 @@ function obtenerPaises()
 }
 
 
+/*CERRAR SESION*/
+function cerrarSesion(){
+localStorage.clear();
+mostrarMensaje("Sesión Cerrada");
+setTimeout(() => {
+    ruteo.push("/login");
+},501);
 
+}
+
+
+/*LOGIN*/
+function iniciarSesion(){
+    try{
+        let usuario = document.querySelector("#txtUsuarioLogin").value;
+        let password = document.querySelector("#txtPasswordLogin").value;
+        validarDatos(usuario,password);
+        fetch(urlBase+"login.php",
+            {
+                method:"POST",
+                headers:{"Content-type":"application/json"},
+                body:JSON.stringify({
+                     usuario: usuario, password: password
+                })
+            }
+        )
+        .then(function(response){
+            return response.json();
+        })
+        .then(function(datos){
+            if(datos.codigo=="200"){
+                localStorage.setItem("id", datos.id);
+                localStorage.setItem("apiKey", datos.apiKey);
+                limpiarCampos("txtUsuarioLogin","txtPasswordLogin");
+                mostrarMenu("logueado");
+                mostrarMensaje("Login Exitoso, bienvenido " + usuario,2500);
+                setTimeout(() => {
+                    ruteo.push("/");
+                },501);
+               
+            }else{
+                mostrarMensaje(datos.mensaje);
+            }
+        })
+    }catch(Error){
+        mostrarMensaje(Error.message,1500);
+    }
+}
+
+
+function limpiarCampos(){
+    for (let i = 0; i < arguments.length; i++) {
+        document.querySelector("#"+arguments[i]).value="";
+        
+    }
+}
+
+
+function obtenerActividades(){
+    fetch(urlBase+"actividades.php",
+        {   method:"GET",
+            headers:{
+            "Content-type":"application/json",
+            "apiKey": localStorage.getItem("apiKey"),
+             "iduser": localStorage.getItem("id")
+            },
+            
+        })
+        .then (function(response){
+            return response.json();
+        })
+        .then(function(datos){
+            let options= "";
+            datos.actividades.forEach(element => {
+                options+=`<ion-select-option value=${element.id}>${element.nombre}</ion-select-option>`
+            });
+            document.querySelector("#slcActividad").innerHTML=options;
+        })
+        .catch(e=> console.log(e));
+
+}
