@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" src="styles.css">
+    <link rel="stylesheet" src="styles.scss">
     <script
       type="module"
       src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"
@@ -37,9 +37,9 @@
         </ion-header>
         <!--OPCIONES DEL MENU-->
         <ion-content class="ion-padding">
-            <ion-item onclick="cerrarMenu()" href="/">Home</ion-item>
-            <ion-item onclick="cerrarMenu()" href="/login">Login</ion-item>
-            <ion-item onclick="cerrarMenu()" href="/registro">Registro</ion-item>
+            <ion-item href="/"  onclick="cerrarMenu()"  class="logueado">Home</ion-item>
+            <ion-item href="/login" onclick="cerrarMenu()"  class="noLogueado">Login</ion-item>
+            <ion-item href="/registro" onclick="cerrarMenu()"  class="noLogueado">Registro</ion-item>
         </ion-content>
       </ion-menu>
       <div class="ion-page" id="main-content">
@@ -65,8 +65,8 @@
           </ion-header>
           <ion-content >
            
-            <ion-item onclick="cerrarMenu()" href="/login"> <ion-button  color="warning">Iniciar sesion</ion-button></ion-item>
-            <ion-item onclick="cerrarMenu()" href="/registro"> <ion-button  color="warning">Registrarse</ion-button></ion-item>
+            <ion-item onclick="cerrarMenu()" href="/login"> <ion-button  color="warning">Registrar Actividad</ion-button></ion-item>
+            <ion-item onclick="cerrarMenu()" href="/registro"> <ion-button  color="warning">LogOut</ion-button></ion-item>
             
           </ion-content>
       </ion-page>
@@ -109,12 +109,12 @@
               <ion-content >
                  <ion-list>
                   <ion-item>
-                    <ion-input id="txtEmailRegistro" labelPlacement="stacked" label="Email" placeholder="email@domain.com"> 
+                    <ion-input id="txtUsuarioRegistro" labelPlacement="stacked" label="Usuario" placeholder="ejemplo123"> 
                       <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
                     </ion-input>
                 </ion-item>
                 <ion-item>
-                  <ion-input id="txtPasswordRegistro" label="Password" type="password" value="password">
+                  <ion-input id="txtPasswordRegistro" label="Password" type="password" placeholder="*********">
                     <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
                   </ion-input>
                 </ion-item>
@@ -122,10 +122,7 @@
                 <ion-item>
                     <ion-list>
                         <ion-item>
-                          <ion-select id="slcPais" aria-label="Pais" interface="popover" placeholder="Selecciona Pais">
-                            <ion-select-option value="apples">Uruguay</ion-select-option>
-                            <ion-select-option value="oranges">Brasil</ion-select-option>
-                            <ion-select-option value="bananas">Francia</ion-select-option>
+                          <ion-select id="slcPais" aria-label="Pais" interface="popover" placeholder="Seleccione un Pais"> 
                           </ion-select>
                         </ion-item>
                       </ion-list>
@@ -134,6 +131,7 @@
                 <ion-button id="btnRegistro" color="warning">Registro</ion-button>  
               </ion-content>
               </ion-page>
+              <!--LISTADO DE REGISTROS-->
         </ion-app>
       </body>
       </html>
