@@ -1,0 +1,48 @@
+/* Estilos generales */
+ion-content {
+    --background: #bababa;
+    --color: #fff;
+  }
+  
+  /* Imagen de fondo */
+  .fondoLogin {
+    --background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                  url("img/Running.gif") no-repeat center center / cover;
+}
+
+
+
+
+  /* Estilos para listas */
+  .list-md {
+    margin: 0;
+    padding: 0;
+    background: var(--ion-item-background, var(--ion-background-color, #bababa));
+  }
+  
+  /* Estilos para ion-item */
+  ion-item {
+    --background: #373737;
+    --color: beige;
+  }
+  
+  /* Etiquetas */
+  .label {
+    color: beige;
+  }
+  
+  /* Botones y títulos */
+  .button, ion-title {
+    color: rgb(255, 196, 9);
+  }
+  
+  /* Estilos para la barra de herramientas */
+  ion-toolbar {
+    --background: #373737;
+    --color: #fff;
+  }
+  
+  /* Estilos para inputs */
+  .input-wrapper.sc-ion-input-md {
+    color: beige;
+  }

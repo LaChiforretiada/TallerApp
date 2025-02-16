@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" src="styles.scss">
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <link rel="icon" href="img/icon.png">
     <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"
+    type="module"
+    src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"
     ></script>
     <script
-      nomodule
-      src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"
+    nomodule
+    src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"
     ></script>
     <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"
     />
     <script src="JS/codigo.js" defer></script>
     <title>Taller App</title>
@@ -93,7 +93,7 @@
               </ion-buttons>
             </ion-toolbar>
           </ion-header>
-          <ion-content >
+          <ion-content class="fondoLogin">
              <ion-list>
               <ion-item>
                 <ion-input id="txtUsuarioLogin" labelPlacement="stacked" label="Email" placeholder="email@domain.com"> 
@@ -107,6 +107,7 @@
             </ion-item>
             </ion-list>
             <ion-button id="btnLogin" color="warning">Login</ion-button>  
+            
           </ion-content>
           </ion-page>
           <!--REGISTRO-->
@@ -188,60 +189,4 @@
       </html>
 
 
-      <!--ESTILOS (PROBAR HACERLO EN HOJA DE ESTILO)-->
-      <style>
-        ion-content {
-          --background: #bababa;
-          --color: #fff;
-        }
-      </style>
-
-      <style>
-        .list-md {
-          margin-left: 0;
-          margin-right: 0;
-          margin-top: 0;
-          margin-bottom: 0;
-          padding-left: 0;
-          padding-right: 0;
-          padding-top: 0;
-          padding-bottom: 0;
-          background: var(--ion-item-background, var(--ion-background-color, #bababa));
-      }
-      </style>
-      
-      <style>
-        ion-item {
-          --background:  #373737;
-          --color: beige;
-        }
-      </style>
-
-      <style>
-        .label{
-          color: beige;
-        }
-      </style>
-      
-      <style>
-        .button,ion-title{
-          color:rgb(255, 196, 9);
-        }
-      </style>
-
-
-      <style>
-        ion-toolbar {
-          --background:  #373737;
-          --color: #fff;
-        }
-      </style>
-     
-
-      
-     <style>
-      .input-wrapper.sc-ion-input-md{
-      color: beige;
-      }
-     </style>
-   
+    
