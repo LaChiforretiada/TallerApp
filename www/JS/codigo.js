@@ -23,9 +23,12 @@ function agregarEventos(){
     document.querySelector("#btnCerrarSesion").addEventListener("click" , cerrarSesion);
     document.querySelector("#btnLogin").addEventListener("click", iniciarSesion);
     ruteo.addEventListener("ionRouteWillChange",mostrarPagina);
+    
 
 }
-
+function volver(){
+    ruteo.back();
+}
 
 function cerrarMenu(){
     document.querySelector("#menu").close();
@@ -119,16 +122,15 @@ function mostrarPagina(event) {
              }
         )
         .then(function(response){
-            return response.json();
+           return response.json();
         })
         .then(function(datos){
             if(datos.codigo=="200"){
                 localStorage.setItem("apiKey", datos.apiKey);
                 localStorage.setItem("id", datos.id);
-                mostrarMensaje("Registro exitoso");
                 limpiarCamposRegistro("txtUsuarioRegistro","txtPasswordRegistro","slcPais");
                 mostrarMenu("logueado");
-                mostrarMensaje("Registro Exitoso, bienvenido " + usuario,500);
+                mostrarMensaje("Registro Exitoso, bienvenido " + usuario,1000,"success");
                 setTimeout(() => {
                     ruteo.push("/");
                 },501);
@@ -137,10 +139,10 @@ function mostrarPagina(event) {
             }
         })
     } catch (Error) {
-        mostrarMensaje(Error.message, 1500);
+        mostrarMensaje(Error.message, 1500, "warning");
     }
 }
- /*VALIDA LOS DATOS DE REGISTRO*/
+ /*VALIDA LOS DATOS DE REGISTRO-LOGIN*/
 function validarDatos(usuario, password) {
     if (usuario.trim().length == 0) {
         throw new Error("El usuario es obligatorio");
@@ -150,14 +152,12 @@ function validarDatos(usuario, password) {
     }
 }
 
-function verificarExistenciaEmail(email) {
-    return usuarios.find(u => u.email == email);
-}
-function mostrarMensaje(mensaje, tiempo = 2500) {
+function mostrarMensaje(mensaje, tiempo = 2500, estado) {
     let toast = document.createElement("ion-toast");
     toast.message = mensaje;
     toast.duration = tiempo;
     toast.position = "bottom";
+    toast.color=estado;
     document.body.appendChild(toast);
     toast.present();
 }
@@ -191,11 +191,11 @@ function obtenerPaises()
 /*CERRAR SESION*/
 function cerrarSesion(){
 localStorage.clear();
-mostrarMensaje("Sesión Cerrada");
+mostrarMensaje("Sesión Cerrada",2000);
 setTimeout(() => {
     ruteo.push("/login");
 },501);
-window.location.reload();
+//window.location.reload();
 }
 
 
@@ -223,7 +223,7 @@ function iniciarSesion(){
                 localStorage.setItem("apiKey", datos.apiKey);
                 limpiarCampos("txtUsuarioLogin","txtPasswordLogin");
                 mostrarMenu("logueado");
-                mostrarMensaje("Login Exitoso, bienvenido " + usuario,2500);
+                mostrarMensaje("Login Exitoso, bienvenido " + usuario,2500, "success");
                 setTimeout(() => {
                     ruteo.push("/");
                 },501);
@@ -247,31 +247,47 @@ function limpiarCampos(){
 
 /*OBTENGO LAS ACTIVIDADES*/
 function obtenerActividades(){
-    if(localStorage.getItem("apiKey")!=null){
-        fetch(urlBase+"actividades.php",
-            {   method:"GET",
-                headers:{
-                "Content-type":"application/json",
-                "apiKey": localStorage.getItem("apiKey"),
-                 "iduser": localStorage.getItem("id")
-                },
-                
-            })
-            .then (function(response){
-                return response.json();
-            })
-            .then(function(datos){
-                let options= "";
-                datos.actividades.forEach(element => {
-                    options+=`<ion-select-option value=${element.id}>${element.nombre}</ion-select-option>`
-                });
-                document.querySelector("#slcActividad").innerHTML=options;
-            })
-            .catch(e=> console.log(e));
-    }else{
-        mostrarMensaje("Debe estar logueado",1500);
-        ruteo.push("/login");
+    try {
+        if(localStorage.getItem("apiKey")!=null){
+            fetch(urlBase+"actividades.php",
+                {   method:"GET",
+                    headers:{
+                    "Content-type":"application/json",
+                    "apiKey": localStorage.getItem("apiKey"),
+                     "iduser": localStorage.getItem("id")
+                    },
+                    
+                })
+                .then (function(response){
+                    if(response.codigo==401){
+                        mostrarMensaje("Debes loguearte de nuevo",1000, "warning");
+                        setTimeout(()=>{
+                            return ruteo.push("/login",500);
+                        })
+                    }
+                    else if(response.codigo==500){
+                        return Promise.reject("Datos incorrectos");
+                    }
+                    else{
+                        return response.json();
+                    }
+                })
+                .then(function(datos){
+                    let options= "";
+                    datos.actividades.forEach(element => {
+                        options+=`<ion-select-option value=${element.id}>${element.nombre}</ion-select-option>`
+                    });
+                    document.querySelector("#slcActividad").innerHTML=options;
+                })
+                .catch(e=> console.log(e));
+        }else{
+            throw new Error("Debes estar logueado para registrar una actividad");
+        }
+    } catch (Error) {
+        mostrarMensaje(Error.message,1500,"warning");
+        setTimeout(()=>{
+            return ruteo.push("/login"),500;
+        })
     }
-    
 }
 

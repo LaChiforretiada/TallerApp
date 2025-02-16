@@ -38,7 +38,7 @@
           </ion-toolbar>
         </ion-header>
         <!--OPCIONES DEL MENU-->
-        <ion-content class="ion-padding">
+        <ion-content class="ion-padding" id="menuHamburguesa">
             <ion-item href="/"  onclick="cerrarMenu()"  class="logueado">Home</ion-item>
             <ion-item href="/login" onclick="cerrarMenu()"  class="noLogueado">Login</ion-item>
             <ion-item href="/registro" onclick="cerrarMenu()"  class="noLogueado">Registro</ion-item>
@@ -93,15 +93,15 @@
               </ion-buttons>
             </ion-toolbar>
           </ion-header>
-          <ion-content class="fondoLogin">
-             <ion-list>
-              <ion-item>
-                <ion-input id="txtUsuarioLogin" labelPlacement="stacked" label="Email" placeholder="email@domain.com"> 
+          <ion-content class="fondoAnimado">
+             <ion-list class="listTransparente">
+              <ion-item class="itemTransparente">
+                <ion-input id="txtUsuarioLogin" labelPlacement="stacked" label="Email" placeholder="email@domain.com" class="txtTransparente"> 
                   <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
                 </ion-input>
             </ion-item>
             <ion-item>
-              <ion-input id="txtPasswordLogin" label="Password" type="password" placeholder="*********">
+              <ion-input id="txtPasswordLogin" label="Password" type="password" placeholder="*********" class="txtTransparente">
                 <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
               </ion-input>
             </ion-item>
@@ -120,23 +120,23 @@
                   </ion-buttons>
                 </ion-toolbar>
               </ion-header>
-              <ion-content >
-                 <ion-list>
-                  <ion-item>
-                    <ion-input id="txtUsuarioRegistro" labelPlacement="stacked" label="Usuario" placeholder="ejemplo123"> 
+              <ion-content class="fondoAnimado" >
+                 <ion-list class="listTransparente">
+                  <ion-item class="itemTransparente">
+                    <ion-input id="txtUsuarioRegistro" labelPlacement="stacked" label="Usuario" placeholder="ejemplo123" class="txtTransparente"> 
                       <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
                     </ion-input>
                 </ion-item>
-                <ion-item>
-                  <ion-input id="txtPasswordRegistro" label="Password" type="password" placeholder="*********">
+                <ion-item class="itemTransparente">
+                  <ion-input id="txtPasswordRegistro" label="Password" type="password" placeholder="*********" class="txtTransparente">
                     <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
                   </ion-input>
                 </ion-item>
                 </ion-list>
-                <ion-item>
-                    <ion-list>
-                        <ion-item>
-                          <ion-select id="slcPais" aria-label="Pais" interface="popover" placeholder="Seleccione un Pais"> 
+                <ion-item class="itemSelect">
+                    <ion-list class="listTransparente">
+                        <ion-item class="itemSelect" >
+                          <ion-select id="slcPais" aria-label="Pais" interface="popover" placeholder="Seleccione un Pais" class="selectTransparente"> 
                           </ion-select>
                         </ion-item>
                       </ion-list>
@@ -180,6 +180,7 @@
                    
                      <br>
                     <ion-button id="registrarActividades" color="warning" >Guardar Actividad</ion-button>  
+                    <ion-button onclick="volver()" color="warning" >Volver</ion-button>  
                   
                   
                   </ion-content>
