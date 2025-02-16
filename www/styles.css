@@ -83,11 +83,6 @@ ion-popover {
     --color: #fff;
   }
   
-  /* Estilos para inputs */
-  .input-wrapper.sc-ion-input-md {
-    color: beige;
-  }
-
  #menuHamburguesa{
     --background: #bababa;
     --color: #fff;
