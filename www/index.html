@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" src="styles.scss">
+    <link rel="icon" href="img/icon.png">
     <script
       type="module"
       src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"
@@ -67,11 +68,18 @@
               </ion-buttons>
             </ion-toolbar>
           </ion-header>
-          <ion-content >
-           
+          <ion-content>
+
+           <ion-list>
             <ion-item  href="/registroActividades"> <ion-button  color="warning">Registrar Actividad</ion-button></ion-item>
-            <ion-item onclick="cerrarMenu()" href="/login"> <ion-button  color="warning">Listado de Actividades</ion-button></ion-item>
-            <ion-item onclick="cerrarMenu()" href="/login"> <ion-button id="btnCerrarSesion"  color="warning">Cerrar Sesión</ion-button></ion-item>
+           </ion-list>
+            <ion-list>
+              <ion-item onclick="cerrarMenu()" href="/login"> <ion-button  color="warning">Listado de Actividades</ion-button></ion-item>
+            </ion-list>
+            <ion-list>
+              <ion-item onclick="cerrarMenu()" href="/login"> <ion-button id="btnCerrarSesion"  color="warning">Cerrar Sesión</ion-button></ion-item>
+            </ion-list>
+            
             
           </ion-content>
       </ion-page>
@@ -147,7 +155,7 @@
                     </ion-toolbar>
                   </ion-header>
                   <ion-content >
-                   
+                   <ion-list>
                     <ion-item>
                       <ion-select id="slcActividad" label="Actividad Realizada" label-placement="start">
             
@@ -159,18 +167,28 @@
                       <ion-input label="Minutos realizados:" type="number" placeholder="00" max="3"></ion-input>
                     </ion-item>
                     
-                    <ion-datetime-button datetime="datetime"></ion-datetime-button>
-                  <ion-modal>
-                  <ion-datetime id="datetime"></ion-datetime>
-                  </ion-modal>
-
-                  <ion-button id="registrarActividades" color="warning" >Guardar Actividad</ion-button>  
+                    <ion-list>
+                      <ion-item>
+                        <ion-datetime-button datetime="datetime"></ion-datetime-button>
+                        <ion-modal>
+                        <ion-datetime id="datetime" show-default-buttons="true" presentation="date"></ion-datetime>
+                        
+                        </ion-modal>
+                      </ion-item>
+                    </ion-list>
+                   
+                     <br>
+                    <ion-button id="registrarActividades" color="warning" >Guardar Actividad</ion-button>  
+                  
+                  
                   </ion-content>
               </ion-page>
         </ion-app>
       </body>
       </html>
 
+
+      <!--ESTILOS (PROBAR HACERLO EN HOJA DE ESTILO)-->
       <style>
         ion-content {
           --background: #bababa;
@@ -178,13 +196,39 @@
         }
       </style>
 
+      <style>
+        .list-md {
+          margin-left: 0;
+          margin-right: 0;
+          margin-top: 0;
+          margin-bottom: 0;
+          padding-left: 0;
+          padding-right: 0;
+          padding-top: 0;
+          padding-bottom: 0;
+          background: var(--ion-item-background, var(--ion-background-color, #bababa));
+      }
+      </style>
       
       <style>
         ion-item {
           --background:  #373737;
-          --color: #fff;
+          --color: beige;
         }
       </style>
+
+      <style>
+        .label{
+          color: beige;
+        }
+      </style>
+      
+      <style>
+        .button,ion-title{
+          color:rgb(255, 196, 9);
+        }
+      </style>
+
 
       <style>
         ion-toolbar {
@@ -192,3 +236,12 @@
           --color: #fff;
         }
       </style>
+     
+
+      
+     <style>
+      .input-wrapper.sc-ion-input-md{
+      color: beige;
+      }
+     </style>
+   

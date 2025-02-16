@@ -9,8 +9,6 @@ inicio();
 function inicio() {
     ocultarPaginas();
     agregarEventos();
-    obtenerPaises();
-    obtenerActividades();
     if(localStorage.getItem("apiKey")!=null && localStorage.getItem("apiKey")!=undefined){
         mostrarMenu("logueado");
     }else{
@@ -20,7 +18,7 @@ function inicio() {
 
 
 function agregarEventos(){
-    document.querySelector("#ruteo").addEventListener("ionRouteWillChange",navegar);
+    //document.querySelector("#ruteo").addEventListener("ionRouteWillChange",navegar);
     document.querySelector("#btnRegistro").addEventListener("click", registro);
     document.querySelector("#btnCerrarSesion").addEventListener("click" , cerrarSesion);
     document.querySelector("#btnLogin").addEventListener("click", iniciarSesion);
@@ -46,7 +44,7 @@ function mostrarMenu(clase){
 }
 
 
-function navegar(event){
+/*function navegar(event){
     ocultarPaginas();
     if(event.detail.to=="/"){
         document.querySelector("#home").style.display="block";
@@ -58,10 +56,11 @@ function navegar(event){
         document.querySelector("#registro").style.display="block";
     }
     else if(event.detail.to=="/registroActividades"){
+        //agregarRegistro(); --Validar apiKey en la function
         document.querySelector("#registroActividades").style.display="block";
     }
    
-}
+}*/
 
 
 function ocultarPaginas(){
@@ -85,12 +84,14 @@ function mostrarPagina(event) {
             
             break;
         case "/registro":
+            obtenerPaises();
             document.querySelector("#registro").style.display = "block";
             break;
         case "/login":
             document.querySelector("#login").style.display = "block";
             break;
         case "/registroActividades":
+            obtenerActividades();
             document.querySelector("#registroActividades").style.display = "block";
             break;
             default:
@@ -194,7 +195,7 @@ mostrarMensaje("Sesión Cerrada");
 setTimeout(() => {
     ruteo.push("/login");
 },501);
-
+window.location.reload();
 }
 
 
@@ -244,27 +245,33 @@ function limpiarCampos(){
     }
 }
 
-
+/*OBTENGO LAS ACTIVIDADES*/
 function obtenerActividades(){
-    fetch(urlBase+"actividades.php",
-        {   method:"GET",
-            headers:{
-            "Content-type":"application/json",
-            "apiKey": localStorage.getItem("apiKey"),
-             "iduser": localStorage.getItem("id")
-            },
-            
-        })
-        .then (function(response){
-            return response.json();
-        })
-        .then(function(datos){
-            let options= "";
-            datos.actividades.forEach(element => {
-                options+=`<ion-select-option value=${element.id}>${element.nombre}</ion-select-option>`
-            });
-            document.querySelector("#slcActividad").innerHTML=options;
-        })
-        .catch(e=> console.log(e));
-
+    if(localStorage.getItem("apiKey")!=null){
+        fetch(urlBase+"actividades.php",
+            {   method:"GET",
+                headers:{
+                "Content-type":"application/json",
+                "apiKey": localStorage.getItem("apiKey"),
+                 "iduser": localStorage.getItem("id")
+                },
+                
+            })
+            .then (function(response){
+                return response.json();
+            })
+            .then(function(datos){
+                let options= "";
+                datos.actividades.forEach(element => {
+                    options+=`<ion-select-option value=${element.id}>${element.nombre}</ion-select-option>`
+                });
+                document.querySelector("#slcActividad").innerHTML=options;
+            })
+            .catch(e=> console.log(e));
+    }else{
+        mostrarMensaje("Debe estar logueado",1500);
+        ruteo.push("/login");
+    }
+    
 }
+
