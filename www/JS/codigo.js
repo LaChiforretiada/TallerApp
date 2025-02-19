@@ -441,6 +441,6 @@ async function listadoAct(){
    } 
 }
 
-async function ObtenerActividad() {
+async function ObtenerRegistros() {
     
 }
