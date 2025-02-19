@@ -99,7 +99,7 @@ function mostrarPagina(event) {
             document.querySelector("#registroActividades").style.display = "block";
         break;
         case "/paginaActividades":
-                armarListadoActividades();
+                listadoActividades();
                 document.querySelector("#paginaActividades").style.display = "block";
         break;
             default:
@@ -433,14 +433,111 @@ function armarListadoActividades() {
 }
 
 /* Async - Await */
-async function listadoAct(){
-   try {
-    let 
-   } catch (error) {
-    
-   } 
+async function listadoActividades() {
+    let registros = await ObtenerRegistros();
+    let actividades = await obtenerActividadesParaListado(); 
+
+    let cards = "";
+
+    for (let i = 0; i < registros.length; i++) {
+        let registro = registros[i];
+        let actividad = null;
+
+        for (let j = 0; j < actividades.length; j++) {
+            if (actividades[j].id == registro.idActividad) {
+                actividad = actividades[j];
+                break; 
+            }
+        }
+
+        if (actividad !== null) {
+            cards += `
+            <ion-card style='padding-bottom:10%'>
+                <ion-card-header>
+                    <ion-card-title>${actividad.nombre}</ion-card-title>    
+                </ion-card-header>
+                <ion-card-content>
+                     <img alt="${actividad.nombre}" src="${urlImagenes}${actividad.imagen}.png" />
+                    <p>Usuario: ${registro.idUsuario}</p>
+                    <p>Tiempo: ${registro.tiempo} minutos</p>
+                    <p>Fecha: ${registro.fecha}</p>
+                </ion-card-content>
+            </ion-card>`;
+        }
+    }
+    document.querySelector("#listaActividades").innerHTML = cards;
 }
 
+
 async function ObtenerRegistros() {
+   try {
+    if(localStorage.getItem("apiKey")!=null){
+     let response = await fetch(urlBase + "registros.php?idUsuario=" + localStorage.getItem("id"),{
+        headers: {
+            "Content-type": "application/json",
+            "apiKey": localStorage.getItem("apiKey"),
+            "iduser" : localStorage.getItem("id")
+        }
+     }
+    );
+
+     if(response.codigo == 401){
+        mostrarMensaje("Debes iniciar sesión",500);
+        setTimeout(() => {
+            return ruteo.push("/login");
+        }, 501);
+     }
+     else if (response.status == 404) {
+        throw new Error("Datos incorrectos");
+       
+    }
+    else {
+        let datos = await response.json();
+        return datos.registros;
+    }
+    }else{
+        mostrarMensaje("Debes iniciar sesión");
+        setTimeout(() => {
+            return ruteo.push("/login");
+        }, 501);
+    }
+   } catch (Error) {
+    mostrarMensaje(Error.message);
+   }
+}
+
+async function obtenerActividadesParaListado() {
+    try {
+        if(localStorage.getItem("apiKey")!=null){
+         let response = await fetch(urlBase + "actividades.php",{
+            headers: {
+                "Content-type": "application/json",
+                "apiKey": localStorage.getItem("apiKey"),
+                "iduser" : localStorage.getItem("id")
+            }
+         }
+        );
     
+         if(response.codigo == 401){
+            mostrarMensaje("Debes iniciar sesión",500);
+            setTimeout(() => {
+                return ruteo.push("/login");
+            }, 501);
+         }
+         else if (response.status == 404) {
+            throw new Error("Datos incorrectos");
+        }
+        else {
+            let datos = await response.json();
+            return datos.actividades;
+        }
+        }else{
+            mostrarMensaje("Debes iniciar sesión");
+            setTimeout(() => {
+                return ruteo.push("/login");
+            }, 501);
+        }
+       } catch (Error) {
+        mostrarMensaje(Error.message);
+       }
 }
