@@ -22,6 +22,7 @@ function agregarEventos(){
     document.querySelector("#btnRegistro").addEventListener("click", registro);
     document.querySelector("#btnCerrarSesion").addEventListener("click" , cerrarSesion);
     document.querySelector("#btnLogin").addEventListener("click", iniciarSesion);
+    document.querySelector("#registrarActividades").addEventListener("click", agregarRegistro);
     ruteo.addEventListener("ionRouteWillChange",mostrarPagina);
     
 
@@ -96,7 +97,11 @@ function mostrarPagina(event) {
         case "/registroActividades":
             obtenerActividades();
             document.querySelector("#registroActividades").style.display = "block";
-            break;
+        break;
+        case "/paginaActividades":
+                armarListadoActividades();
+                document.querySelector("#paginaActividades").style.display = "block";
+        break;
             default:
             localStorage.clear();
             mostrarMenu("noLogueado");
@@ -291,3 +296,151 @@ function obtenerActividades(){
     }
 }
 
+
+
+function agregarRegistro(){
+    try {
+        let idActividad = document.querySelector("#slcActividad").value;
+        let tiempo = parseInt(document.querySelector("#idMinutos").value);
+        let fecha = document.querySelector("#idFecha").value;
+        console.log(fecha);
+        validarActividad(idActividad);
+        validarFecha(fecha);
+        validarMinutos(tiempo);
+        if(localStorage.getItem("apiKey")!=null){
+            fetch(urlBase+"registros.php",
+            {
+              method: "POST",
+              headers:{
+                "Content-type":"application/json",
+                "apiKey": localStorage.getItem("apiKey"),
+                "iduser": localStorage.getItem("id")},
+                body:JSON.stringify({
+                    idActividad: idActividad, 
+                    idUsuario: localStorage.getItem("id"), 
+                    tiempo : tiempo, 
+                    fecha : fecha
+               })
+            })
+            .then (function(response){
+                if(response.codigo==401){
+                    mostrarMensaje("Debes loguearte de nuevo",1000, "warning");
+                    setTimeout(()=>{
+                        return ruteo.push("/login",500);
+                    })
+                }
+                else if(response.codigo==500){
+                    return Promise.reject("Datos incorrectos");
+                }
+                else{
+                    return response.json();
+                }
+            })
+            .then(function(datos){
+                if(datos.codigo=="200"){
+                    mostrarMensaje("Actividad Registrada con éxito",2000,"success");
+                }else{
+                    mostrarMensaje(datos.mensaje);
+                }
+            })
+            .catch(e=> console.log(e));
+        }else{
+            throw new Error("Debes estar logueado para registrar una actividad");
+        }
+        
+    } catch (Error) {
+        mostrarMensaje(Error.message,1500,"danger");
+    }
+} 
+
+
+
+function validarFecha(fechaElegida) {
+    let fechaHoy = Date.now();
+    let fechaSeleccionada = new Date(fechaElegida).getTime(); 
+    
+    if (fechaSeleccionada > fechaHoy || isNaN(fechaSeleccionada)) {
+        throw new Error("La fecha debe ser anterior a la fecha actual o debe seleccionar una fecha");
+    }
+}
+
+
+function validarActividad(actividad){
+if(actividad === undefined){
+    throw new Error("Debe ingresar una actividad");
+}
+}
+
+
+function validarMinutos(minutos){
+if (isNaN(minutos) || minutos <= 0 ) {
+    throw new Error("Ingrese solo numeros");
+}}
+
+/* LISTADO DE ACTIVIDADES*/
+function armarListadoActividades() {
+    try {
+        if (localStorage.getItem("apiKey") != null) {
+            fetch(urlBase + "registros.php?idUsuario=" + localStorage.getItem("id"), {
+                headers: {
+                    "Content-type": "application/json",
+                    "apiKey": localStorage.getItem("apiKey"),
+                    "iduser" : localStorage.getItem("id")
+                }
+            })
+                .then(function (response) {
+                    if (response.codigo == 401) {
+                        mostrarMensaje("Debes iniciar sesión");
+                        setTimeout(() => {
+                            ruteo.push("/login");
+                        }, 501);
+                    }
+                    else if (response.codigo == 404) {
+                        return Promise.reject("Datos incorrectos");
+                    }
+                    return response.json();
+                })
+                .then(function (datos) {
+                    let registros = "";
+                    datos.registros.forEach(registro => {
+                    //let actividad =  obtenerActividad(datos.registro[i].idActividad);
+                    registros += `<ion-card style='padding-bottom:10%'>
+                 <ion-card-header>
+    <ion-card-title>${registro.id}</ion-card-title>    
+  </ion-card-header>
+  <ion-card-content>
+    <p>Nombre: ${registro.idActividad}</p>
+    <p>Precio: ${registro.idUsuario}</p>
+    <p>Estado: ${registro.tiempo}</p>
+    
+  </ion-card-content>
+</ion-card>`;
+                    });
+                    document.querySelector("#listaActividades").innerHTML = registros;
+                })
+                .catch(function (mensaje) {
+                    mostrarMensaje(mensaje);
+                })
+           
+        }
+        else {
+            throw new Error("Debes estar logueado para acceder al listado de productos");
+        }
+
+    } catch (Error) {
+        mostrarMensaje(Error.message);
+    }
+}
+
+/* Async - Await */
+async function listadoAct(){
+   try {
+    let 
+   } catch (error) {
+    
+   } 
+}
+
+async function ObtenerActividad() {
+    
+}

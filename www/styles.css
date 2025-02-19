@@ -91,3 +91,15 @@ ion-popover {
     --background: #bababa;
     --color: #fff;
 }
+
+.small-datetime {
+  max-width: 150px;  /* Ajusta el tamaño */
+  font-size: 12px;   /* Reduce el tamaño del texto */
+  --ion-color-primary: #ff5733; /* Cambia el color del texto seleccionado */
+  --ion-text-color: #444;  /* Color del texto normal */
+}
+
+.small-datetime::part(wheel-item) {
+  color: #4d6400; /* Color de los números */
+  font-size: 12px; /* Reduce aún más el tamaño del texto */
+}
