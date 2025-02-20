@@ -23,7 +23,8 @@ function agregarEventos(){
     document.querySelector("#btnCerrarSesion").addEventListener("click" , cerrarSesion);
     document.querySelector("#btnLogin").addEventListener("click", iniciarSesion);
     document.querySelector("#registrarActividades").addEventListener("click", agregarRegistro);
-    document.querySelector("#slcFiltro").addEventListener("ionChange", listadoActividades)
+    document.querySelector("#slcFiltro").addEventListener("ionChange", listadoActividades);
+    document.querySelector("#btnTiempos").addEventListener("click", miTiempo);
     ruteo.addEventListener("ionRouteWillChange",mostrarPagina);
     
 }
@@ -99,7 +100,7 @@ function mostrarPagina(event) {
             document.querySelector("#registroActividades").style.display = "block";
         break;
         case "/paginaActividades":
-                //listadoActividades();
+                listadoActividades();
                 document.querySelector("#paginaActividades").style.display = "block";
         break;
             default:
@@ -377,6 +378,7 @@ if (isNaN(minutos) || minutos <= 0 ) {
     throw new Error("Ingrese solo numeros");
 }}
 
+
 /* LISTADO DE ACTIVIDADES*/
 /* Async - Await */
 async function listadoActividades() {
@@ -456,6 +458,7 @@ async function ObtenerRegistros() {
    }
 }
 
+
 async function obtenerActividadesParaListado() {
     try {
         if(localStorage.getItem("apiKey")!=null){
@@ -516,6 +519,7 @@ function eliminarRegistro(id){
                     }
                     else{
                         mostrarMensaje("Registro eliminado con exito") 
+                        listadoActividades();
                         //window.location.reload(); 
                     } 
                 })
@@ -534,37 +538,63 @@ function eliminarRegistro(id){
 
 }
 
-async function filtroPorFecha(registros){
-    let fecha = document.querySelector("#slcFiltro").value;
+
+async function filtroPorFecha(registros) {
+    let filtro = document.querySelector("#slcFiltro").value;
     let fechaActual = new Date();
-    let registrosFiltrado= [];
-    if (fecha == 2) {
+    let registrosFiltrado = [];
+
+    if (filtro == "2") { 
         let fechaLimite = new Date();
-        fechaLimite.setDate(fechaActual.getDate() - 7);         
-        
+        fechaLimite.setDate(fechaActual.getDate() - 8); 
+
         registros.forEach(element => {
-            let fechaElemento = new Date(element.fecha).getTime();    
-            console.log(fechaElemento);
-            if (fechaElemento <= fechaActual && fechaElemento >= fechaLimite) {
-                    registrosFiltrado.push(element);
-                }
-            }
-        )
-        }
-        else if (fecha == 3) {  
-            let fechaLimite = new Date();
-            fechaLimite.setDate(fechaActual.getDate() - 30);
-        
-            registros.forEach(element => {
-                let fechaElemento = new Date(element.fecha).getTime();
-                if (fechaElemento <= fechaActual && fechaElemento >= fechaLimite) {
+            let fechaElemento = new Date(element.fecha);
+            if (fechaElemento >= fechaLimite && fechaElemento <= fechaActual) {
                 registrosFiltrado.push(element);
             }
-        }
-    )      
-    }else{
-         registrosFiltrado = registros;
-    }   
+        });
+    } 
+    else if (filtro == "3") { 
+        let fechaLimite = new Date();
+        fechaLimite.setMonth(fechaActual.getMonth() - 1); 
+
+        registros.forEach(element => {
+            let fechaElemento = new Date(element.fecha);
+            if (fechaElemento >= fechaLimite && fechaElemento <= fechaActual) {
+                registrosFiltrado.push(element);
+            }
+        });
+    } 
+    else {
+        registrosFiltrado = registros; 
+    }
+
     return registrosFiltrado;
 }
 
+
+function miTiempo(){
+let registros = ObtenerRegistros();
+label="";
+let tiempoTotal = 0;
+let tiempoDiario = 0;
+let fechaActual = new Date();
+let fechaLimite = new Date();
+fechaLimite.setDate(fechaActual.getDate() - 1);
+
+registros.forEach(unRegistro => {
+    tiempoTotal += unRegistro.tiempo;
+    let fechaElemento = new Date(unRegistro.fecha);
+    if (fechaElemento >= fechaLimite && fechaElemento <= fechaActual) {
+         tiempoDiario += unRegistro.tiempo;
+    }
+});
+let parrafo1 = document.querySelector("#idTiempoTotal").innerHTML = tiempoTotal;
+
+label += `<ion-label>Tiempo Diario:${tiempoDiario}</ion-label>
+         <ion-label>Tiempo Total:${tiempoTotal}</ion-label> `
+
+
+document.querySelector("#resultadoTiempo").innerHTML = label;
+}

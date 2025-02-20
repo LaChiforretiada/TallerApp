@@ -80,8 +80,18 @@
             <ion-list>
               <ion-item onclick="cerrarMenu()" href="/login"> <ion-button id="btnCerrarSesion"  color="warning">Cerrar Sesión</ion-button></ion-item>
             </ion-list>
-            
-            
+            <div id="contenedorTiempo" style="padding-bottom: 50px;">
+              <ion-list>
+                <ion-item>
+                    <ion-button id="btnTiempos" color="warning">Mi tiempo</ion-button>
+                    <p id="idTiempoTotal"></p>
+                    <p id="idTiempoDiario"></p>
+                  </ion-item>
+              </ion-list>
+              <div id="resultadoTiempo" style="margin-top: 20px; padding: 10px; background: #bb1212; border-radius: 8px; display: none;">
+                  
+              </div>
+             </div>
           </ion-content>
       </ion-page>
       <!--LOGIN-->
@@ -201,9 +211,9 @@
                     <ion-list>
                       <ion-item>
                         <ion-select id="slcFiltro" label="Registro por Fecha" label-placement="start">
-                          <ion-select-option id="1">Todos los registros</ion-select-option>
-                         <ion-select-option id="2" >Última Semana</ion-select-option>
-                         <ion-select-option id="3">Último Mes</ion-select-option>
+                          <ion-select-option value="1">Todos los registros</ion-select-option>
+                         <ion-select-option value="2">Última Semana</ion-select-option>
+                         <ion-select-option value="3">Último Mes</ion-select-option>
                         </ion-select>
                       </ion-item>
                     </ion-list>
@@ -216,8 +226,3 @@
         </ion-app>
       </body>
       </html>
-
-     <!-- <ion-datetime-button datetime="datetime"></ion-datetime-button>
-                        <ion-modal>
-                        <ion-datetime id="datetime" show-default-buttons="true" presentation="date"></ion-datetime>
-                        </ion-modal>-->
