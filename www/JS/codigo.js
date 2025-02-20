@@ -574,8 +574,9 @@ async function filtroPorFecha(registros) {
 }
 
 
-function miTiempo(){
-let registros = ObtenerRegistros();
+async function miTiempo(){
+let registros = await ObtenerRegistros();
+
 label="";
 let tiempoTotal = 0;
 let tiempoDiario = 0;
@@ -590,11 +591,11 @@ registros.forEach(unRegistro => {
          tiempoDiario += unRegistro.tiempo;
     }
 });
-let parrafo1 = document.querySelector("#idTiempoTotal").innerHTML = tiempoTotal;
+//let parrafo1 = document.querySelector("#idTiempoTotal").innerHTML = tiempoTotal;
 
 label += `<ion-label>Tiempo Diario:${tiempoDiario}</ion-label>
+          <br>
          <ion-label>Tiempo Total:${tiempoTotal}</ion-label> `
-
 
 document.querySelector("#resultadoTiempo").innerHTML = label;
 }
