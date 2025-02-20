@@ -191,16 +191,25 @@
               <ion-page id="paginaActividades" class="ion-page">
                 <ion-header>
                     <ion-toolbar>
-                      <ion-title>Tus Actividades Registradas</ion-title>
+                      <ion-title style="padding-top: 1%;"> <ion-button style="margin-right: 3%; padding-bottom: 1%;"onclick="volver()" color="warning">Volver</ion-button> Tus Actividades Registradas</ion-title>
                       <ion-buttons slot="end">
                         <ion-menu-button></ion-menu-button>
                       </ion-buttons>
                     </ion-toolbar>
                   </ion-header>
-                  <ion-content id="listaActividades">
-                    <p>Listado de Actividades</p>
-                    
-                    
+                  <ion-content >
+                    <ion-list>
+                      <ion-item>
+                        <ion-select id="slcFiltro" label="Registro por Fecha" label-placement="start">
+                          <ion-select-option id="1">Todos los registros</ion-select-option>
+                         <ion-select-option id="2" >Última Semana</ion-select-option>
+                         <ion-select-option id="3">Último Mes</ion-select-option>
+                        </ion-select>
+                      </ion-item>
+                    </ion-list>
+            
+                    </ion-select>
+                    <div id="listaActividades"></div>
                     
                   </ion-content>
               </ion-page>

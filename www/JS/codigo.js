@@ -23,9 +23,9 @@ function agregarEventos(){
     document.querySelector("#btnCerrarSesion").addEventListener("click" , cerrarSesion);
     document.querySelector("#btnLogin").addEventListener("click", iniciarSesion);
     document.querySelector("#registrarActividades").addEventListener("click", agregarRegistro);
+    document.querySelector("#slcFiltro").addEventListener("ionChange", listadoActividades)
     ruteo.addEventListener("ionRouteWillChange",mostrarPagina);
     
-
 }
 function volver(){
     ruteo.back();
@@ -99,7 +99,7 @@ function mostrarPagina(event) {
             document.querySelector("#registroActividades").style.display = "block";
         break;
         case "/paginaActividades":
-                listadoActividades();
+                //listadoActividades();
                 document.querySelector("#paginaActividades").style.display = "block";
         break;
             default:
@@ -378,69 +378,18 @@ if (isNaN(minutos) || minutos <= 0 ) {
 }}
 
 /* LISTADO DE ACTIVIDADES*/
-function armarListadoActividades() {
-    try {
-        if (localStorage.getItem("apiKey") != null) {
-            fetch(urlBase + "registros.php?idUsuario=" + localStorage.getItem("id"), {
-                headers: {
-                    "Content-type": "application/json",
-                    "apiKey": localStorage.getItem("apiKey"),
-                    "iduser" : localStorage.getItem("id")
-                }
-            })
-                .then(function (response) {
-                    if (response.codigo == 401) {
-                        mostrarMensaje("Debes iniciar sesión");
-                        setTimeout(() => {
-                            ruteo.push("/login");
-                        }, 501);
-                    }
-                    else if (response.codigo == 404) {
-                        return Promise.reject("Datos incorrectos");
-                    }
-                    return response.json();
-                })
-                .then(function (datos) {
-                    let registros = "";
-                    datos.registros.forEach(registro => {
-                    //let actividad =  obtenerActividad(datos.registro[i].idActividad);
-                    registros += `<ion-card style='padding-bottom:10%'>
-                 <ion-card-header>
-    <ion-card-title>${registro.id}</ion-card-title>    
-  </ion-card-header>
-  <ion-card-content>
-    <p>Nombre: ${registro.idActividad}</p>
-    <p>Precio: ${registro.idUsuario}</p>
-    <p>Estado: ${registro.tiempo}</p>
-    
-  </ion-card-content>
-</ion-card>`;
-                    });
-                    document.querySelector("#listaActividades").innerHTML = registros;
-                })
-                .catch(function (mensaje) {
-                    mostrarMensaje(mensaje);
-                })
-           
-        }
-        else {
-            throw new Error("Debes estar logueado para acceder al listado de productos");
-        }
-
-    } catch (Error) {
-        mostrarMensaje(Error.message);
-    }
-}
-
 /* Async - Await */
 async function listadoActividades() {
     let registros = await ObtenerRegistros();
     let actividades = await obtenerActividadesParaListado(); 
-
+    let registrosFiltrado = await filtroPorFecha(registros);
+    
+     
     let cards = "";
 
-    for (let i = 0; i < registros.length; i++) {
-        let registro = registros[i];
+    for (let i = 0; i < registrosFiltrado.length; i++) {
+        let registro = registrosFiltrado[i];
+        console.log(registro.fecha);
         let actividad = null;
 
         for (let j = 0; j < actividades.length; j++) {
@@ -449,9 +398,9 @@ async function listadoActividades() {
                 break; 
             }
         }
-
+        
         if (actividad !== null) {
-            cards += `
+            cards += `</ion-card> 
             <ion-card style='padding-bottom:10%'>
                 <ion-card-header>
                     <ion-card-title>${actividad.nombre}</ion-card-title>    
@@ -461,8 +410,8 @@ async function listadoActividades() {
                     <p>Usuario: ${registro.idUsuario}</p>
                     <p>Tiempo: ${registro.tiempo} minutos</p>
                     <p>Fecha: ${registro.fecha}</p>
-                </ion-card-content>
-            </ion-card>`;
+                    <ion-button onclick="eliminarRegistro('${registro.id}')" color="danger" style='margin-top:0.5%'> Eliminar registro</ion-button>
+                    </ion-card-content>`;
         }
     }
     document.querySelector("#listaActividades").innerHTML = cards;
@@ -493,6 +442,7 @@ async function ObtenerRegistros() {
     }
     else {
         let datos = await response.json();
+        
         return datos.registros;
     }
     }else{
@@ -541,3 +491,80 @@ async function obtenerActividadesParaListado() {
         mostrarMensaje(Error.message);
        }
 }
+
+
+function eliminarRegistro(id){
+    try {
+        if(localStorage.getItem("apiKey")!=null){
+            fetch(urlBase+"registros.php?idRegistro=" + id,
+                {   method:"DELETE",
+                    headers:{
+                    "Content-type":"application/json",
+                    "apiKey": localStorage.getItem("apiKey"),
+                     "iduser": localStorage.getItem("id")
+                    },
+                })
+                .then (function(response){
+                    if(response.codigo==401){
+                        mostrarMensaje("Debes loguearte de nuevo",1000, "warning");
+                        setTimeout(()=>{
+                            return ruteo.push("/login",500);
+                        })
+                    }
+                    else if(response.codigo==500){
+                        return Promise.reject("Datos incorrectos");
+                    }
+                    else{
+                        mostrarMensaje("Registro eliminado con exito") 
+                        //window.location.reload(); 
+                    } 
+                })
+            .catch(e=> console.log(e));
+        }else{
+            throw new Error("Debes estar logueado para registrar una actividad");
+        }
+    } catch (Error) {
+        mostrarMensaje(Error.message,1500,"warning");
+        setTimeout(()=>{
+            return ruteo.push("/login"),500;
+        })  
+    }   
+
+
+
+}
+
+async function filtroPorFecha(registros){
+    let fecha = document.querySelector("#slcFiltro").value;
+    let fechaActual = new Date();
+    let registrosFiltrado= [];
+    if (fecha == 2) {
+        let fechaLimite = new Date();
+        fechaLimite.setDate(fechaActual.getDate() - 7);         
+        
+        registros.forEach(element => {
+            let fechaElemento = new Date(element.fecha).getTime();    
+            console.log(fechaElemento);
+            if (fechaElemento <= fechaActual && fechaElemento >= fechaLimite) {
+                    registrosFiltrado.push(element);
+                }
+            }
+        )
+        }
+        else if (fecha == 3) {  
+            let fechaLimite = new Date();
+            fechaLimite.setDate(fechaActual.getDate() - 30);
+        
+            registros.forEach(element => {
+                let fechaElemento = new Date(element.fecha).getTime();
+                if (fechaElemento <= fechaActual && fechaElemento >= fechaLimite) {
+                registrosFiltrado.push(element);
+            }
+        }
+    )      
+    }else{
+         registrosFiltrado = registros;
+    }   
+    return registrosFiltrado;
+}
+
