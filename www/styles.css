@@ -103,3 +103,62 @@ ion-popover {
   color: #4d6400; /* Color de los números */
   font-size: 12px; /* Reduce aún más el tamaño del texto */
 }
+
+.labelTiempo {
+  display: block;  /* Hace que cada label esté en una línea separada */
+  font-size: 1.2rem; /* Aumenta el tamaño del texto */
+  font-weight: bold; /* Texto en negrita */
+  text-align: center;
+  margin: 10px 0; /* Espaciado entre los elementos */
+  padding: 10px;
+  border-radius: 10px;
+  width: 80%; /* Que no ocupe toda la pantalla */
+  max-width: 300px; /* Límite máximo de ancho */
+}
+
+.labelTiempo:first-child {
+  background-color: #ffcc00; /* Color amarillo */
+  color: black;
+  border: 2px solid #ff9900;
+}
+
+.labelTiempo:last-child {
+  background-color: #007bff; /* Color azul */
+  color: white;
+  border: 2px solid #0056b3;
+}
+
+#resultadoTiempo {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra los labels en el contenedor */
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.contenedor-modal {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+}
+
+
+
+
+#modalTiempoDiario {
+  background-color: #ffcc00;
+  color: black;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+#modalTiempoTotal {
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+

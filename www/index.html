@@ -80,18 +80,26 @@
             <ion-list>
               <ion-item onclick="cerrarMenu()" href="/login"> <ion-button id="btnCerrarSesion"  color="warning">Cerrar Sesión</ion-button></ion-item>
             </ion-list>
-            <div id="contenedorTiempo" style="padding-bottom: 50px;">
+           <div id="contenedorTiempo" style="padding-bottom: 50px;">
               <ion-list>
                 <ion-item>
                     <ion-button id="btnTiempos" color="warning">Mi tiempo</ion-button>
-                    <p id="idTiempoTotal"></p>
-                    <p id="idTiempoDiario"></p>
                   </ion-item>
               </ion-list>
               <div id="resultadoTiempo">
                   
               </div>
              </div>
+            <!--<ion-modal id="modalTiempo">
+              <ion-content>
+                <div class="contenedor-modal">
+                  <h2>Tiempo Registrado</h2>
+                  <p id="modalTiempoDiario"></p>
+                  <p id="modalTiempoTotal"></p>
+                  <ion-button color="danger" onclick="cerrarModal()">Cerrar</ion-button>
+                </div>
+              </ion-content>
+            </ion-modal>--> 
           </ion-content>
       </ion-page>
       <!--LOGIN-->
@@ -181,12 +189,16 @@
                     
                     <ion-list>
                       <ion-item>
-                        <ion-datetime 
+                       <!--<ion-datetime 
                           id="idFecha"
                           presentation="date" 
                           prefer-wheel="true" 
                           class="small-datetime">
-                        </ion-datetime>
+                        </ion-datetime>--> 
+                      <ion-datetime-button datetime="date" class="custom-datetime-button"></ion-datetime-button>
+                     <ion-popover  trigger="date" trigger-action="click">
+                     <ion-datetime  id="date" presentation="date"></ion-datetime>
+                    </ion-popover>
                       </ion-item>
                     </ion-list>
                     

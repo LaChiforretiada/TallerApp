@@ -303,7 +303,7 @@ function agregarRegistro(){
     try {
         let idActividad = document.querySelector("#slcActividad").value;
         let tiempo = parseInt(document.querySelector("#idMinutos").value);
-        let fecha = document.querySelector("#idFecha").value;
+        let fecha = document.querySelector("#date").value;
         console.log(fecha);
         validarActividad(idActividad);
         validarFecha(fecha);
@@ -582,7 +582,7 @@ let tiempoTotal = 0;
 let tiempoDiario = 0;
 let fechaActual = new Date();
 let fechaLimite = new Date();
-fechaLimite.setDate(fechaActual.getDate() - 1);
+fechaLimite.setDate(fechaActual.getHours() - 24);
 
 registros.forEach(unRegistro => {
     tiempoTotal += unRegistro.tiempo;
@@ -591,11 +591,43 @@ registros.forEach(unRegistro => {
          tiempoDiario += unRegistro.tiempo;
     }
 });
-//let parrafo1 = document.querySelector("#idTiempoTotal").innerHTML = tiempoTotal;
-
-label += `<ion-label>Tiempo Diario:${tiempoDiario}</ion-label>
+label += `<ion-label class="labelTiempo">Tiempo Diario: ${tiempoDiario}</ion-label>
           <br>
-         <ion-label>Tiempo Total:${tiempoTotal}</ion-label> `
+         <ion-label class="labelTiempo">Tiempo Total: ${tiempoTotal}</ion-label> `
 
 document.querySelector("#resultadoTiempo").innerHTML = label;
 }
+
+
+//MODAL PARA MI TIEMPO
+/*async function miTiempo() {
+    let registros = await ObtenerRegistros();
+
+    let tiempoTotal = 0;
+    let tiempoDiario = 0;
+    let fechaActual = new Date();
+    let fechaLimite = new Date();
+    fechaLimite.setDate(fechaActual.getHours() - 24);
+
+    registros.forEach(unRegistro => {
+        tiempoTotal += unRegistro.tiempo;
+        let fechaElemento = new Date(unRegistro.fecha);
+        if (fechaElemento >= fechaLimite && fechaElemento <= fechaActual) {
+            tiempoDiario += unRegistro.tiempo;
+        }
+    });
+
+    // Actualiza los datos en el modal
+    document.querySelector("#modalTiempoDiario").innerText = `Tiempo Diario: ${tiempoDiario}`;
+    document.querySelector("#modalTiempoTotal").innerText = `Tiempo Total: ${tiempoTotal}`;
+
+    // Abre el modal
+    let modal = document.querySelector("#modalTiempo");
+    modal.present();
+}
+
+// Función para cerrar el modal
+function cerrarModal() {
+    let modal = document.querySelector("#modalTiempo");
+    modal.dismiss();
+}*/
