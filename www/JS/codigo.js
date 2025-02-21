@@ -2,7 +2,9 @@ const urlBase = "https://movetrack.develotion.com/";
 const urlImagenes = "https://movetrack.develotion.com/imgs/";
 const ruteo = document.querySelector("#ruteo");
 
-
+let latitudOrigen="";
+let longitudOrigen="";
+navigator.geolocation.getCurrentPosition(guardarUbicacion,obtenerError);
 
 
 inicio();
@@ -16,6 +18,24 @@ function inicio() {
     }
 }
 
+function guardarUbicacion(position){
+    latitudOrigen = position.coords.latitude;
+    longitudOrigen = position.coords.longitude;
+}
+
+function obtenerError(error){
+    switch(error.code){
+        case 0:
+            mostrarMensaje("Tiempo excedido");
+            break;
+        case 1: 
+        mostrarMensaje("Es necesario habilitar geolocalizacion");
+        break;
+        case 2: 
+        mostrarMensaje("Ubicacion no detectada");
+        break;
+    }
+}
 
 function agregarEventos(){
     //document.querySelector("#ruteo").addEventListener("ionRouteWillChange",navegar);
@@ -103,6 +123,10 @@ function mostrarPagina(event) {
                 listadoActividades();
                 document.querySelector("#paginaActividades").style.display = "block";
         break;
+        case "/mapa":
+            mostrarMapa();
+            document.querySelector("#mapa").style.display = "block";
+          break;
             default:
             localStorage.clear();
             mostrarMenu("noLogueado");
@@ -631,3 +655,86 @@ function cerrarModal() {
     let modal = document.querySelector("#modalTiempo");
     modal.dismiss();
 }*/
+
+async function mostrarMapa() {
+  
+    let paises = await obtenerPaisesParaMapa();
+    let cantidadUsuarios = await cantidadUsuarioPorPais();
+
+     
+    setTimeout(() => {
+        
+        var map = L.map('map', {
+            minZoom: 2, // Evita que el usuario aleje demasiado el zoom
+            maxBounds: [
+                [-90, -180], // Esquina suroeste
+                [90, 180]    // Esquina noreste
+            ],
+            maxBoundsViscosity: 1.0, // Mantiene al usuario dentro de los límites
+            worldCopyJump: true // Corrige el desplazamiento del mapa al llegar al borde
+        }).fitWorld();
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            minZoom: 2, // Aplica el mismo mínimo aquí
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+        L.marker([latitudOrigen,longitudOrigen]).addTo(map);
+
+        for (let i = 0; i < paises.length; i++) {
+            let pais = paises[i];
+            
+            let marker = L.marker([pais.latitude, pais.longitude]).addTo(map);
+            for (let j = 0; j < cantidadUsuarios.length; j++) {
+                if (cantidadUsuarios[j].id == pais.id) {
+                     marker.bindPopup("Cantidad de Usuarios:"+ cantidadUsuarios[j].cantidadDeUsuarios).addTo(map);
+                }
+            }
+        }
+        map.invalidateSize();
+    }, 500);
+}
+
+async function cantidadUsuarioPorPais() {
+    try {
+        let response = await fetch(urlBase+"usuariosPorPais.php",
+          {
+              headers:{"Content-type":"application/json",
+                "apiKey": localStorage.getItem("apiKey"),
+                 "iduser": localStorage.getItem("id")
+              },
+          })
+          if(response.codigo == 401){
+              mostrarMensaje("Debes iniciar sesión",500);
+              setTimeout(() => {
+                  return ruteo.push("/login");
+              }, 501);
+           }else{
+              let datos = await response.json();
+              return datos.paises;
+           }
+    } catch (Error) {
+        mostrarMensaje(Error.message);
+    }
+}
+
+async function obtenerPaisesParaMapa()
+{
+    try {
+        let response = await fetch(urlBase+"paises.php",
+          {
+              headers:{"Content-type":"application/json"},
+          })
+          if(response.codigo == 401){
+              mostrarMensaje("Debes iniciar sesión",500);
+              setTimeout(() => {
+                  return ruteo.push("/login");
+              }, 501);
+           }else{
+              let datos = await response.json();
+              return datos.paises;
+           }
+    } catch (Error) {
+        mostrarMensaje(Error.message);
+    }
+}
