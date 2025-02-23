@@ -225,7 +225,7 @@ mostrarMensaje("Sesión Cerrada",2000);
 setTimeout(() => {
     ruteo.push("/login");
 },501);
-//window.location.reload();
+window.location.reload();
 }
 
 
@@ -410,6 +410,7 @@ async function listadoActividades() {
     let actividades = await obtenerActividadesParaListado(); 
     let registrosFiltrado = await filtroPorFecha(registros);
     
+    
      
     let cards = "";
 
@@ -544,6 +545,7 @@ function eliminarRegistro(id){
                     else{
                         mostrarMensaje("Registro eliminado con exito") 
                         listadoActividades();
+                        miTiempo();
                         //window.location.reload(); 
                     } 
                 })
@@ -598,28 +600,33 @@ async function filtroPorFecha(registros) {
 }
 
 
-async function miTiempo(){
-let registros = await ObtenerRegistros();
+async function miTiempo() {
+    let registros = await ObtenerRegistros();
+    let tiempoTotal = 0;
+    let tiempoDiario = 0;
 
-label="";
-let tiempoTotal = 0;
-let tiempoDiario = 0;
-let fechaActual = new Date();
-let fechaLimite = new Date();
-fechaLimite.setDate(fechaActual.getHours() - 24);
+    let fechaActual = new Date();
+    let fechaLimite = new Date();
+    fechaLimite.setDate(fechaActual.getDate() - 1);
+    fechaLimite.setHours(0, 0, 0, 0);
+    fechaActual.setHours(23, 59, 59, 999);
+   //Usamos ChatGPT para convertir las fechas a ISO, porque ionic la ponia en UTC
+    registros.forEach(unRegistro => {
+        tiempoTotal += unRegistro.tiempo;
 
-registros.forEach(unRegistro => {
-    tiempoTotal += unRegistro.tiempo;
-    let fechaElemento = new Date(unRegistro.fecha);
-    if (fechaElemento >= fechaLimite && fechaElemento <= fechaActual) {
-         tiempoDiario += unRegistro.tiempo;
-    }
-});
-label += `<ion-label class="labelTiempo">Tiempo Diario: ${tiempoDiario}</ion-label>
-          <br>
-         <ion-label class="labelTiempo">Tiempo Total: ${tiempoTotal}</ion-label> `
+        let fechaISO = new Date(unRegistro.fecha).toISOString().split("T")[0];
 
-document.querySelector("#resultadoTiempo").innerHTML = label;
+        let fechaLimiteISO = fechaLimite.toISOString().split("T")[0];
+        let fechaActualISO = fechaActual.toISOString().split("T")[0];
+        if (fechaISO >= fechaLimiteISO && fechaISO <= fechaActualISO) {
+            tiempoDiario += unRegistro.tiempo;
+        } 
+    });
+    document.querySelector("#resultadoTiempo").innerHTML = `
+        <ion-label class="labelTiempo">Tiempo Diario: ${tiempoDiario}</ion-label>
+        <br>
+        <ion-label class="labelTiempo">Tiempo Total: ${tiempoTotal}</ion-label>
+    `;
 }
 
 
