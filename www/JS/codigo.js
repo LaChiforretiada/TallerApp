@@ -1,7 +1,6 @@
 const urlBase = "https://movetrack.develotion.com/";
 const urlImagenes = "https://movetrack.develotion.com/imgs/";
 const ruteo = document.querySelector("#ruteo");
-
 let latitudOrigen="";
 let longitudOrigen="";
 navigator.geolocation.getCurrentPosition(guardarUbicacion,obtenerError);
@@ -18,10 +17,12 @@ function inicio() {
     }
 }
 
+
 function guardarUbicacion(position){
     latitudOrigen = position.coords.latitude;
     longitudOrigen = position.coords.longitude;
 }
+
 
 function obtenerError(error){
     switch(error.code){
@@ -37,6 +38,7 @@ function obtenerError(error){
     }
 }
 
+
 function agregarEventos(){
     //document.querySelector("#ruteo").addEventListener("ionRouteWillChange",navegar);
     document.querySelector("#btnRegistro").addEventListener("click", registro);
@@ -48,13 +50,18 @@ function agregarEventos(){
     ruteo.addEventListener("ionRouteWillChange",mostrarPagina);
     
 }
+
+
 function volver(){
     ruteo.back();
 }
 
+
 function cerrarMenu(){
     document.querySelector("#menu").close();
 }
+
+
 /*MOSTRAR MENU*/
 function mostrarMenu(clase){
     let itemsMenu = document.querySelectorAll("ion-menu ion-item");
@@ -67,25 +74,6 @@ function mostrarMenu(clase){
        
     })
 }
-
-
-/*function navegar(event){
-    ocultarPaginas();
-    if(event.detail.to=="/"){
-        document.querySelector("#home").style.display="block";
-    }
-    else if(event.detail.to=="/login"){
-        document.querySelector("#login").style.display="block";
-    }
-    else if(event.detail.to=="/registro"){
-        document.querySelector("#registro").style.display="block";
-    }
-    else if(event.detail.to=="/registroActividades"){
-        //agregarRegistro(); --Validar apiKey en la function
-        document.querySelector("#registroActividades").style.display="block";
-    }
-   
-}*/
 
 
 function ocultarPaginas(){
@@ -103,6 +91,7 @@ function mostrarPagina(event) {
         case "/":
             if(localStorage.getItem("apiKey") !=null){
                 document.querySelector("#home").style.display = "block";
+                miTiempo();
             }else{
                 ruteo.push("/login");
             }
@@ -142,6 +131,7 @@ function mostrarPagina(event) {
         let password = document.querySelector("#txtPasswordRegistro").value;
         let pais = document.querySelector("#slcPais").value;
         validarDatos(usuario, password);
+        validarPais(pais);
         fetch(urlBase+"/usuarios.php",
              {
                 method:"POST",
@@ -172,7 +162,9 @@ function mostrarPagina(event) {
         mostrarMensaje(Error.message, 1500, "warning");
     }
 }
- /*VALIDA LOS DATOS DE REGISTRO-LOGIN*/
+
+
+/*VALIDA LOS DATOS DE REGISTRO-LOGIN*/
 function validarDatos(usuario, password) {
     if (usuario.trim().length == 0) {
         throw new Error("El usuario es obligatorio");
@@ -181,6 +173,15 @@ function validarDatos(usuario, password) {
         throw new Error("La password es obligatoria");
     }
 }
+
+
+/*VALIDA LOS DATOS DE REGISTRO-PAIS*/
+function validarPais(pais) {
+    if (pais == null || pais == undefined) {
+        throw new Error("El pais es obligatorio");
+    }
+}
+
 
 function mostrarMensaje(mensaje, tiempo = 2500, estado) {
     let toast = document.createElement("ion-toast");
@@ -192,11 +193,13 @@ function mostrarMensaje(mensaje, tiempo = 2500, estado) {
     toast.present();
 }
 
+
 function limpiarCamposRegistro() {
     document.querySelector("#txtUsuarioRegistro").value = "";
     document.querySelector("#txtPasswordRegistro").value = "";
     document.querySelector("#slcPais").value = "";
 }
+
 
 function obtenerPaises()
 {
@@ -275,6 +278,7 @@ function limpiarCampos(){
     }
 }
 
+
 /*OBTENGO LAS ACTIVIDADES*/
 function obtenerActividades(){
     try {
@@ -322,7 +326,6 @@ function obtenerActividades(){
 }
 
 
-
 function agregarRegistro(){
     try {
         let idActividad = document.querySelector("#slcActividad").value;
@@ -359,6 +362,7 @@ function agregarRegistro(){
                 }
                 else{
                     return response.json();
+                    
                 }
             })
             .then(function(datos){
@@ -377,7 +381,6 @@ function agregarRegistro(){
         mostrarMensaje(Error.message,1500,"danger");
     }
 } 
-
 
 
 function validarFecha(fechaElegida) {
@@ -399,7 +402,7 @@ if(actividad === undefined){
 
 function validarMinutos(minutos){
 if (isNaN(minutos) || minutos <= 0 ) {
-    throw new Error("Ingrese solo numeros");
+    throw new Error("Ingrese solo numeros, mayores a 0");
 }}
 
 
@@ -408,40 +411,65 @@ if (isNaN(minutos) || minutos <= 0 ) {
 async function listadoActividades() {
     let registros = await ObtenerRegistros();
     let actividades = await obtenerActividadesParaListado(); 
-    let registrosFiltrado = await filtroPorFecha(registros);
-    
-    
-     
+    let registrosFiltrado = await filtroPorFecha(registros);    
     let cards = "";
+    console.log(registros);
 
-    for (let i = 0; i < registrosFiltrado.length; i++) {
-        let registro = registrosFiltrado[i];
-        console.log(registro.fecha);
-        let actividad = null;
-
-        for (let j = 0; j < actividades.length; j++) {
-            if (actividades[j].id == registro.idActividad) {
-                actividad = actividades[j];
-                break; 
+    try {
+        for (let i = 0; i < registrosFiltrado.length; i++) {
+            let registro = registrosFiltrado[i];
+            console.log(registro.fecha);
+            let actividad = null;
+            
+            for (let j = 0; j < actividades.length; j++) {
+                if (actividades[j].id == registro.idActividad) {
+                    actividad = actividades[j];
+                    break; 
+                }
+            }
+            
+            if (actividad !== null) {
+                cards += `</ion-card> 
+                <ion-card style='padding-bottom:10%'>
+                <ion-card-header>
+                <ion-card-title>${actividad.nombre}</ion-card-title>    
+                </ion-card-header>
+                <ion-card-content>
+                <img alt="${actividad.nombre}" src="${urlImagenes}${actividad.imagen}.png" />
+                <p>Usuario: ${registro.idUsuario}</p>
+                <p>Tiempo: ${registro.tiempo} minutos</p>
+                <p>Fecha: ${registro.fecha}</p>
+                <ion-button onclick="eliminarRegistro('${registro.id}')" color="danger" style='margin-top:0.5%'> Eliminar registro</ion-button>
+                </ion-card-content>`;
             }
         }
         
-        if (actividad !== null) {
-            cards += `</ion-card> 
-            <ion-card style='padding-bottom:10%'>
-                <ion-card-header>
-                    <ion-card-title>${actividad.nombre}</ion-card-title>    
-                </ion-card-header>
-                <ion-card-content>
-                     <img alt="${actividad.nombre}" src="${urlImagenes}${actividad.imagen}.png" />
-                    <p>Usuario: ${registro.idUsuario}</p>
-                    <p>Tiempo: ${registro.tiempo} minutos</p>
-                    <p>Fecha: ${registro.fecha}</p>
-                    <ion-button onclick="eliminarRegistro('${registro.id}')" color="danger" style='margin-top:0.5%'> Eliminar registro</ion-button>
-                    </ion-card-content>`;
-        }
+        
+        document.querySelector("#listaActividades").innerHTML = cards;
+        validarRegistrosEnListaDeActividades(registros);
+        validarRegistrosFiltradosEnListaDeActividades(registrosFiltrado);
+    } catch (Error) {
+        mostrarMensaje(Error.message);
     }
-    document.querySelector("#listaActividades").innerHTML = cards;
+   
+}
+
+
+function validarRegistrosFiltradosEnListaDeActividades(registrosFiltrados) {
+    
+    if (registrosFiltrados. length == 0) {
+        throw new Error("No tienes actividades dentro de estas fechas");
+    }
+
+}
+
+
+function validarRegistrosEnListaDeActividades(registros){
+
+    if (registros.length == 0) {
+    throw new Error("No tienes actividades");
+    }
+
 }
 
 
@@ -546,7 +574,7 @@ function eliminarRegistro(id){
                         mostrarMensaje("Registro eliminado con exito") 
                         listadoActividades();
                         miTiempo();
-                        //window.location.reload(); 
+                        
                     } 
                 })
             .catch(e=> console.log(e));
@@ -559,8 +587,6 @@ function eliminarRegistro(id){
             return ruteo.push("/login"),500;
         })  
     }   
-
-
 
 }
 
@@ -610,7 +636,8 @@ async function miTiempo() {
     fechaLimite.setDate(fechaActual.getDate() - 1);
     fechaLimite.setHours(0, 0, 0, 0);
     fechaActual.setHours(23, 59, 59, 999);
-   //Usamos ChatGPT para convertir las fechas a ISO, porque ionic la ponia en UTC
+   
+    //Usamos ChatGPT para convertir las fechas a ISO, porque ionic la ponia en UTC
     registros.forEach(unRegistro => {
         tiempoTotal += unRegistro.tiempo;
 
@@ -630,39 +657,6 @@ async function miTiempo() {
 }
 
 
-//MODAL PARA MI TIEMPO
-/*async function miTiempo() {
-    let registros = await ObtenerRegistros();
-
-    let tiempoTotal = 0;
-    let tiempoDiario = 0;
-    let fechaActual = new Date();
-    let fechaLimite = new Date();
-    fechaLimite.setDate(fechaActual.getHours() - 24);
-
-    registros.forEach(unRegistro => {
-        tiempoTotal += unRegistro.tiempo;
-        let fechaElemento = new Date(unRegistro.fecha);
-        if (fechaElemento >= fechaLimite && fechaElemento <= fechaActual) {
-            tiempoDiario += unRegistro.tiempo;
-        }
-    });
-
-    // Actualiza los datos en el modal
-    document.querySelector("#modalTiempoDiario").innerText = `Tiempo Diario: ${tiempoDiario}`;
-    document.querySelector("#modalTiempoTotal").innerText = `Tiempo Total: ${tiempoTotal}`;
-
-    // Abre el modal
-    let modal = document.querySelector("#modalTiempo");
-    modal.present();
-}
-
-// Función para cerrar el modal
-function cerrarModal() {
-    let modal = document.querySelector("#modalTiempo");
-    modal.dismiss();
-}*/
-
 async function mostrarMapa() {
   
     let paises = await obtenerPaisesParaMapa();
@@ -674,8 +668,8 @@ async function mostrarMapa() {
         var map = L.map('map', {
             minZoom: 2, // Evita que el usuario aleje demasiado el zoom
             maxBounds: [
-                [-90, -180], // Esquina suroeste
-                [90, 180]    // Esquina noreste
+                [-90, -180],
+                [90, 180]    
             ],
             maxBoundsViscosity: 1.0, // Mantiene al usuario dentro de los límites
             worldCopyJump: true // Corrige el desplazamiento del mapa al llegar al borde
@@ -683,7 +677,7 @@ async function mostrarMapa() {
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            minZoom: 2, // Aplica el mismo mínimo aquí
+            minZoom: 2, 
             attribution: '© OpenStreetMap'
         }).addTo(map);
         L.marker([latitudOrigen,longitudOrigen]).addTo(map);
@@ -701,6 +695,7 @@ async function mostrarMapa() {
         map.invalidateSize();
     }, 500);
 }
+
 
 async function cantidadUsuarioPorPais() {
     try {
@@ -724,6 +719,7 @@ async function cantidadUsuarioPorPais() {
         mostrarMensaje(Error.message);
     }
 }
+
 
 async function obtenerPaisesParaMapa()
 {
