@@ -113,8 +113,13 @@ function mostrarPagina(event) {
                 document.querySelector("#paginaActividades").style.display = "block";
         break;
         case "/mapa":
-            mostrarMapa();
-            document.querySelector("#mapa").style.display = "block";
+            if(localStorage.getItem("apiKey") !=null){
+                mostrarMapa();
+                document.querySelector("#mapa").style.display = "block";
+            }else{
+                ruteo.push("/login");
+                mostrarMensaje("Debe estar logueado");
+            }
           break;
             default:
             localStorage.clear();
